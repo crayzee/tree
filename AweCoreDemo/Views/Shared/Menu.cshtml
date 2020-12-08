@@ -1,0 +1,41 @@
+<div id="demoMenu">
+    @{
+        var action = ViewContext.RouteData.Values["Action"];
+        var controller = ViewContext.RouteData.Values["Controller"];
+    }
+
+    <input id="msearch" type="text" class="msearch awe-display awe-txt" placeholder="search..." data-brf="true" />
+    <nav role="navigation">
+        <div id="Menu" class="scrlh"></div>
+    </nav>
+    <script>
+        var action = '@action';
+        var contr = '@controller';
+        document.action = action;
+        document.controller = contr;
+        var data;
+        $(function () {
+            aweui.grid({
+                id: 'Menu',
+                mod: { loading: false, customRender: sideMenu.menutree },
+                rowClassClientFormat: '.(Selected)',
+                dataFunc: function(sgp) {
+                    if (data) return sideMenu.getMenuGridFunc(data)(sgp);
+
+                    return $.when(cstorg.get('@Url.Action("GetMenuNodes", "Data")')).then(function(res) {
+                        data = res;
+                        return sideMenu.getMenuGridFunc(data)(sgp);
+                    });
+                },
+                parents: [{ id: 'msearch', name: 'search', load: false }],
+                showGroupBar: false,
+                showHeader: false,
+                showFooter: false,
+                height: 300,
+                columnWidth: 100,
+                persistence: utils.Persistence.Session,
+                columns: [{ id: 'col1' }]
+            });
+        });
+    </script>
+</div>
